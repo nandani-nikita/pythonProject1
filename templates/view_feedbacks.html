@@ -21,8 +21,12 @@
         .btn-green:hover {
             background-color: #218838;
         }
+
     </style>
 </head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
 <body>
 
 <div class="container py-5">
@@ -35,6 +39,8 @@
     <!-- 📋 Export + Pagination Controls -->
     <div class="d-flex justify-content-between mb-3">
         <button onclick="exportTableToCSV('feedbackTable')" class="btn btn-green">Export to CSV</button>
+        <button onclick="exportTableToPDF()" class="btn btn-warning me-2">Export to PDF</button>
+
         <div>
             <button onclick="prevPage()" class="btn btn-outline-secondary me-2">Prev</button>
             <button onclick="nextPage()" class="btn btn-outline-secondary">Next</button>
@@ -45,29 +51,29 @@
     <div class="table-responsive">
         <table id="feedbackTable" class="table table-bordered table-hover bg-white shadow">
             <thead>
-                <tr>
-                    <th>Member</th>
-                    <th>Farmer Name</th>
-                    <th>Mobile</th>
-                    <th>Date</th>
-                    <th>Feedback</th>
-                    <th>Crops</th>
-                    <th>Products Used</th>
-                    <th>Land Used / Total</th>
-                </tr>
+            <tr>
+                <th>Member</th>
+                <th>Farmer Name</th>
+                <th>Mobile</th>
+                <th>Date</th>
+                <th>Feedback</th>
+                <th>Crops</th>
+                <th>Products Used</th>
+                <th>Land Used / Total</th>
+            </tr>
             </thead>
             <tbody id="feedbackBody">
             {% for fb in feedbacks %}
-                <tr>
-                    <td>{{ fb.member_name }} ({{ fb.member_id }})</td>
-                    <td>{{ fb.farmer_name }}</td>
-                    <td>{{ fb.mobile }}</td>
-                    <td>{{ fb.date }}</td>
-                    <td>{{ fb.feedback }}</td>
-                    <td>{{ fb.crops }}</td>
-                    <td>{{ fb.products_used }}</td>
-                    <td>{{ fb.used_area }} / {{ fb.total_land }}</td>
-                </tr>
+            <tr>
+                <td>{{ fb.member_name }} ({{ fb.member_id }})</td>
+                <td>{{ fb.farmer_name }}</td>
+                <td>{{ fb.mobile }}</td>
+                <td>{{ fb.date }}</td>
+                <td>{{ fb.feedback }}</td>
+                <td>{{ fb.crops }}</td>
+                <td>{{ fb.products_used }}</td>
+                <td>{{ fb.used_area }} / {{ fb.total_land }}</td>
+            </tr>
             {% endfor %}
             </tbody>
         </table>
@@ -124,31 +130,63 @@
     }
 
     function exportTableToCSV(tableId, filename = 'feedback_data.csv') {
-    const table = document.getElementById(tableId);
-    const rows = table.querySelectorAll('tr');
-    let csv = [];
+        const table = document.getElementById(tableId);
+        const rows = table.querySelectorAll('tr');
+        let csv = [];
 
-    rows.forEach(row => {
-        let cols = row.querySelectorAll('th, td');
-        let rowData = [];
-        cols.forEach(col => {
-            // Escape quotes and commas
-            let text = col.innerText.replace(/"/g, '""');
-            rowData.push(`"${text}"`);
+        rows.forEach(row => {
+            let cols = row.querySelectorAll('th, td');
+            let rowData = [];
+            cols.forEach(col => {
+                // Escape quotes and commas
+                let text = col.innerText.replace(/"/g, '""');
+                rowData.push(`"${text}"`);
+            });
+            csv.push(rowData.join(','));
         });
-        csv.push(rowData.join(','));
-    });
 
-    // Create and download CSV file
-    const csvBlob = new Blob([csv.join('\n')], { type: 'text/csv' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(csvBlob);
-    a.download = filename;
-    a.click();
-}
+        // Create and download CSV file
+        const csvBlob = new Blob([csv.join('\n')], { type: 'text/csv' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(csvBlob);
+        a.download = filename;
+        a.click();
+    }
+
+    function exportTableToPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('l', 'pt');
+
+        const headers = [];
+        document.querySelectorAll("#feedbackTable thead th").forEach(th => {
+            headers.push(th.innerText);
+        });
+
+        const data = [];
+        document.querySelectorAll("#feedbackTable tbody tr").forEach(row => {
+            const rowData = [];
+            row.querySelectorAll("td").forEach(td => {
+                rowData.push(td.innerText);
+            });
+            data.push(rowData);
+        });
+
+        doc.text("All Submitted Feedbacks", 40, 40);
+        doc.autoTable({
+            startY: 60,
+            head: [headers],
+            body: data,
+            styles: { fontSize: 8, cellPadding: 3 },
+            headStyles: { fillColor: [40, 167, 69] }
+        });
+
+        doc.save("feedback_data.pdf");
+    }
+
 
 
     window.onload = () => showPage(currentPage);
+
 </script>
 
 <!-- Bootstrap JS Bundle -->
