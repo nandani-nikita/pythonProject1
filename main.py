@@ -57,13 +57,28 @@ def submit_feedback(
         date=date,
         created_at=datetime.datetime.now()
     )
-    feedback_collection.insert_one(feedback_data.dict())
-    return RedirectResponse(url=f"/feedback/{member_id}", status_code=303)
+    try:
+        # Insert the feedback into MongoDB
+        feedback_collection.insert_one(feedback_data.dict())
+        return RedirectResponse(
+            url=f"/feedback/{member_id}?success=true",
+            status_code=303
+        )
+
+    # except PyMongoError as e:  # Catch MongoDB-related exceptions
+    #     print(f"Database error: {e}")
+    #     return RedirectResponse(
+    #         url=f"/feedback/{member_id}?error=db_error",
+    #         status_code=303
+    #     )
+    except Exception as e:  # Catch other generic errors
+        print(f"Unexpected error: {e}")
+        return RedirectResponse(
+            url=f"/feedback/{member_id}?error=unknown_error",
+            status_code=303
+        )
 
 
-# from fastapi import Request, Form, Depends
-# from fastapi.templating import Jinja2Templates
-# from fastapi.staticfiles import StaticFiles
 
 # Hardcoded admin credentials
 ADMIN_USERNAME = "ecoadmin"
