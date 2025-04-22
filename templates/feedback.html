@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Farmer Feedback</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        function clearForm() {
+            document.getElementById("farmer-form").reset();
+        }
+    </script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div class="max-w-xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
+        <h2 class="text-2xl font-bold mb-4 text-center">Feedback from {{ member.name }} ({{ member.member_id }})</h2>
+
+        <form id="farmer-form" action="/submit_feedback/{{ member.member_id }}" method="post" class="space-y-4">
+<!--            <label class="block font-semibold">Date:</label>-->
+            <input type="date" name="date" required class="w-full px-4 py-2 border rounded-md">
+            <input type="text" name="farmer_name" placeholder="Farmer's Name" required class="w-full px-4 py-2 border rounded-md">
+            <input type="text" name="address" placeholder="Address" required class="w-full px-4 py-2 border rounded-md">
+            <input type="text" name="mobile" placeholder="Contact No." required class="w-full px-4 py-2 border rounded-md">
+            <input type="text" name="total_land" placeholder="Total Land" required class="w-full px-4 py-2 border rounded-md">
+            <input type="text" name="used_area" placeholder="Used Area" required class="w-full px-4 py-2 border rounded-md">
+            <input type="text" name="crops" placeholder="Crops" required class="w-full px-4 py-2 border rounded-md">
+            <input type="text" name="products_used" placeholder="Products Used" required class="w-full px-4 py-2 border rounded-md">
+            <textarea name="feedback" placeholder="Feedback" rows="4" required class="w-full px-4 py-2 border rounded-md"></textarea>
+            <div class="flex justify-between">
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Submit</button>
+                <button type="button" onclick="clearForm()" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">Clear</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

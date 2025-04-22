@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>All Feedbacks</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+<div class="p-6 max-w-7xl mx-auto">
+    <h2 class="text-2xl font-bold mb-6">All Submitted Feedbacks</h2>
+
+    <!-- 🔍 Search Bar -->
+    <input id="searchInput" type="text" placeholder="Search by name or ID..."
+           class="w-full mb-4 p-3 border border-gray-300 rounded-md shadow-sm" onkeyup="filterTable()">
+
+    <!-- 📋 Export + Pagination Controls -->
+    <div class="flex justify-between mb-4">
+        <button onclick="exportTableToExcel('feedbackTable')" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Export to Excel</button>
+        <div>
+            <button onclick="prevPage()" class="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400 mr-2">Prev</button>
+            <button onclick="nextPage()" class="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400">Next</button>
+        </div>
+    </div>
+
+    <!-- 📄 Feedback Table -->
+    <div class="overflow-x-auto">
+        <table id="feedbackTable" class="w-full bg-white border border-gray-200 rounded shadow">
+            <thead class="bg-blue-600 text-white">
+            <tr>
+                <th class="p-3 text-left">Member</th>
+                <th class="p-3 text-left">Farmer Name</th>
+                <th class="p-3 text-left">Mobile</th>
+                <th class="p-3 text-left">Date</th>
+                <th class="p-3 text-left">Feedback</th>
+                <th class="p-3 text-left">Crops</th>
+                <th class="p-3 text-left">Products Used</th>
+                <th class="p-3 text-left">Land Used / Total</th>
+            </tr>
+            </thead>
+            <tbody id="feedbackBody">
+            {% for fb in feedbacks %}
+                <tr class="border-t hover:bg-gray-50">
+                    <td class="p-3">{{ fb.member_name }} ({{ fb.member_id }})</td>
+                    <td class="p-3">{{ fb.farmer_name }}</td>
+                    <td class="p-3">{{ fb.mobile }}</td>
+                    <td class="p-3">{{ fb.date }}</td>
+                    <td class="p-3">{{ fb.feedback }}</td>
+                    <td class="p-3">{{ fb.crops }}</td>
+                    <td class="p-3">{{ fb.products_used }}</td>
+                    <td class="p-3">{{ fb.used_area }} / {{ fb.total_land }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 🧠 JS for Search, Pagination, Excel Export -->
+<script>
+    let currentPage = 1;
+    const rowsPerPage = 10;
+
+    function showPage(page) {
+        const rows = document.querySelectorAll("#feedbackBody tr");
+        const total = rows.length;
+        const start = (page - 1) * rowsPerPage;
+        const end = page * rowsPerPage;
+
+        rows.forEach((row, index) => {
+            row.style.display = index >= start && index < end ? "" : "none";
+        });
+    }
+
+    function nextPage() {
+        const rows = document.querySelectorAll("#feedbackBody tr");
+        if (currentPage * rowsPerPage < rows.length) {
+            currentPage++;
+            showPage(currentPage);
+        }
+    }
+
+    function prevPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            showPage(currentPage);
+        }
+    }
+
+    function filterTable() {
+        const input = document.getElementById("searchInput").value.toLowerCase();
+        const rows = document.querySelectorAll("#feedbackBody tr");
+        rows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            row.style.display = text.includes(input) ? "" : "none";
+        });
+    }
+
+    function exportTableToExcel(tableId) {
+        let table = document.getElementById(tableId);
+        let html = table.outerHTML.replace(/ /g, '%20');
+
+        const a = document.createElement('a');
+        a.href = 'data:application/vnd.ms-excel,' + html;
+        a.download = 'feedback_data.xls';
+        a.click();
+    }
+
+    // Load first page initially
+    window.onload = () => showPage(currentPage);
+</script>
+</body>
+</html>
