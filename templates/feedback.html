@@ -37,6 +37,10 @@
             right: 1rem;
             z-index: 1050;
         }
+
+
+
+
     </style>
 </head>
 <body>
@@ -50,9 +54,13 @@
         <h2 class="text-center fw-bold mb-4">Feedback from {{ member.name }} ({{ member.member_id }})</h2>
 
         <form id="farmer-form" action="/submit_feedback/{{ member.member_id }}" method="post">
-            <div class="mb-3">
-                <input type="date" name="date" class="form-control" required>
+            <div class="mb-4 row align-items-center">
+                <label for="date" class="col-sm-2 col-form-label fw-bold">Select Date</label>
+                <div class="col-sm-4">
+                    <input type="date" id="date" name="date" class="form-control rounded">
+                </div>
             </div>
+
             <div class="mb-3">
                 <input type="text" name="farmer_name" placeholder="Farmer's Name" class="form-control" required>
             </div>
@@ -102,6 +110,10 @@
             setTimeout(() => popup.classList.add("d-none"), 3000);
         }
     });
+
+
+
+
 </script>
 
 </body>
