@@ -34,7 +34,7 @@
 
     <!-- 📋 Export + Pagination Controls -->
     <div class="d-flex justify-content-between mb-3">
-        <button onclick="exportTableToExcel('feedbackTable')" class="btn btn-green">Export to Excel</button>
+        <button onclick="exportTableToCSV('feedbackTable')" class="btn btn-green">Export to CSV</button>
         <div>
             <button onclick="prevPage()" class="btn btn-outline-secondary me-2">Prev</button>
             <button onclick="nextPage()" class="btn btn-outline-secondary">Next</button>
@@ -122,6 +122,31 @@
         a.download = 'feedback_data.xlsx';
         a.click();
     }
+
+    function exportTableToCSV(tableId, filename = 'feedback_data.csv') {
+    const table = document.getElementById(tableId);
+    const rows = table.querySelectorAll('tr');
+    let csv = [];
+
+    rows.forEach(row => {
+        let cols = row.querySelectorAll('th, td');
+        let rowData = [];
+        cols.forEach(col => {
+            // Escape quotes and commas
+            let text = col.innerText.replace(/"/g, '""');
+            rowData.push(`"${text}"`);
+        });
+        csv.push(rowData.join(','));
+    });
+
+    // Create and download CSV file
+    const csvBlob = new Blob([csv.join('\n')], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(csvBlob);
+    a.download = filename;
+    a.click();
+}
+
 
     window.onload = () => showPage(currentPage);
 </script>
