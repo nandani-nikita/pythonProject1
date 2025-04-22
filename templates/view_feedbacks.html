@@ -119,7 +119,7 @@
         let html = table.outerHTML.replace(/ /g, '%20');
         const a = document.createElement('a');
         a.href = 'data:application/vnd.ms-excel,' + html;
-        a.download = 'feedback_data.xls';
+        a.download = 'feedback_data.xlsx';
         a.click();
     }
 
